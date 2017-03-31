@@ -25,7 +25,7 @@ import json
 import os
 import re
 
-VERSION = '0.3.0pre'
+VERSION = '0.3.0pre_AMcG_fork'
 
 
 def tfstates(root=None):
@@ -597,6 +597,29 @@ def azure_host(resource, module_name):
     # groups specific to mantl
     groups.append('role=' + attrs['role'])
     groups.append('dc=' + attrs['consul_dc'])
+
+    return name, attrs, groups
+
+
+@parses('azurerm_virtual_machine')
+@calculate_mantl_vars
+def azure_vm(resource, module_name):
+    name = resource['primary']['attributes']['name']
+    raw_attrs = resource['primary']['attributes']
+
+    groups = []
+
+    attrs = {
+        'resource_group_name': raw_attrs['resource_group_name'],
+        'id': raw_attrs['id'],
+        'location': raw_attrs['location'],
+        'ansible_ssh_host': raw_attrs['name'],
+        'size': raw_attrs['vm_size'],
+    }
+
+    # groups specific to mantl
+    groups.extend(['azure_location=' + attrs['location'].lower().replace(" ", "-"),
+                   'azure_resource_group_name=' + attrs['resource_group_name']])
 
     return name, attrs, groups
 
