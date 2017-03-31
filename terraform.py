@@ -615,6 +615,9 @@ def azure_vm(resource, module_name):
         'location': raw_attrs['location'],
         'ansible_ssh_host': raw_attrs['name'],
         'size': raw_attrs['vm_size'],
+        'os': parse_attr_list(raw_attrs, 'storage_image_reference'),
+        'nics': parse_list(raw_attrs, 'network_interface_ids'),
+        'datadisks': parse_attr_list(raw_attrs, 'storage_data_disk'),
     }
 
     # groups specific to mantl
